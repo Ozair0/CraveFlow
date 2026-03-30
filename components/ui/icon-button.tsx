@@ -12,6 +12,7 @@ type IconButtonProps = PressableProps & {
   size?: number;
   color?: string;
   filled?: boolean;
+  elevated?: boolean;
 };
 
 export function IconButton({
@@ -19,12 +20,14 @@ export function IconButton({
   size = 20,
   color,
   filled = true,
+  elevated,
   style,
   ...props
 }: IconButtonProps) {
   const theme = useAppTheme();
   const resolveStyle = (state: PressableStateCallbackType) =>
     typeof style === 'function' ? style(state) : style;
+  const shouldElevate = elevated ?? filled;
 
   return (
     <Pressable
@@ -40,7 +43,7 @@ export function IconButton({
           borderColor: theme.colors.border,
           opacity: state.pressed ? 0.8 : 1,
         },
-        theme.shadow.soft,
+        shouldElevate ? theme.shadow.soft : null,
         resolveStyle(state),
       ]}
       {...props}>
