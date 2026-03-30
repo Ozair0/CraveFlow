@@ -3,6 +3,10 @@ import { Redirect, Stack } from 'expo-router';
 import { BootScreen } from '@/components/states/boot-screen';
 import { useAppState } from '@/providers/app-provider';
 
+export const unstable_settings = {
+  initialRouteName: '(tabs)',
+};
+
 export default function AppLayout() {
   const { appState, isReady } = useAppState();
 

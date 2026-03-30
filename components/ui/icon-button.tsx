@@ -31,6 +31,7 @@ export function IconButton({
 
   return (
     <Pressable
+      hitSlop={10}
       style={(state) => [
         {
           width: 42,

@@ -377,6 +377,10 @@ export default function TrackOrderScreen() {
   const { appState } = useAppState();
   const order = appState?.orders.find((entry) => entry.id === id);
 
+  const handleBack = () => {
+    router.dismissTo('/(app)/orders');
+  };
+
   if (!order) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -405,7 +409,7 @@ export default function TrackOrderScreen() {
             alignItems: 'center',
             marginBottom: theme.spacing.lg,
           }}>
-          <IconButton name="arrow-back" onPress={() => router.back()} filled={false} />
+          <IconButton name="arrow-back" onPress={handleBack} filled={false} />
           <AppText variant="title">Track Live Location</AppText>
           <View style={{ width: 42 }} />
         </View>
