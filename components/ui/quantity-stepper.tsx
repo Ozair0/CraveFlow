@@ -19,6 +19,7 @@ export function QuantityStepper({ value, onDecrease, onIncrease }: QuantityStepp
       style={{
         flexDirection: 'row',
         alignItems: 'center',
+        alignSelf: 'flex-start',
         backgroundColor: theme.colors.card,
         borderRadius: theme.radii.pill,
         padding: 6,
