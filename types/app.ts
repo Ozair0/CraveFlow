@@ -108,11 +108,17 @@ export type Courier = {
   vehicle: string;
 };
 
+export type MapCoordinate = {
+  latitude: number;
+  longitude: number;
+};
+
 export type TrackingStop = {
   id: string;
   label: string;
   address: string;
   complete: boolean;
+  coordinate?: MapCoordinate;
 };
 
 export type OrderItemSnapshot = {
@@ -143,6 +149,8 @@ export type Order = {
   activeBadgeLabel: string;
   courier: Courier;
   trackingStops: TrackingStop[];
+  courierLocation?: MapCoordinate;
+  trackingRoute?: MapCoordinate[];
 };
 
 export type Booking = {

@@ -539,18 +539,60 @@ const ordersSeed: Order[] = [
       phone: '+1 (212) 555-0119',
       vehicle: 'Scooter',
     },
+    courierLocation: {
+      latitude: 40.74286,
+      longitude: -73.98174,
+    },
     trackingStops: [
       {
         id: 'pickup',
         label: 'Brooklyn Bites',
         address: '789 Park Avenue, New York, NY',
         complete: true,
+        coordinate: {
+          latitude: 40.74455,
+          longitude: -73.98448,
+        },
       },
       {
         id: 'dropoff',
         label: 'Home',
         address: '8502 Preston Rd, Inglewood, NY',
         complete: false,
+        coordinate: {
+          latitude: 40.74095,
+          longitude: -73.97896,
+        },
+      },
+    ],
+    trackingRoute: [
+      {
+        latitude: 40.74455,
+        longitude: -73.98448,
+      },
+      {
+        latitude: 40.74411,
+        longitude: -73.98392,
+      },
+      {
+        latitude: 40.74358,
+        longitude: -73.98328,
+      },
+      {
+        latitude: 40.74286,
+        longitude: -73.98174,
+      },
+      {
+        latitude: 40.7421,
+        longitude: -73.98041,
+      },
+      {
+        latitude: 40.74152,
+        longitude: -73.97945,
+      },
+      {
+        latitude: 40.74095,
+        longitude: -73.97896,
       },
     ],
   },

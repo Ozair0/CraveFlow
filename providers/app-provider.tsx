@@ -11,6 +11,7 @@ import {
 import type {
   AppState,
   CheckoutPayload,
+  Order,
   OrderItemSnapshot,
   ReservationPayload,
   ThemeMode,
@@ -80,6 +81,136 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function createTrackingGeometry(restaurantId?: string) {
+  const presets = {
+    'brooklyn-bites': {
+      courierLocation: {
+        latitude: 40.74286,
+        longitude: -73.98174,
+      },
+      trackingRoute: [
+        { latitude: 40.74455, longitude: -73.98448 },
+        { latitude: 40.74411, longitude: -73.98392 },
+        { latitude: 40.74358, longitude: -73.98328 },
+        { latitude: 40.74286, longitude: -73.98174 },
+        { latitude: 40.7421, longitude: -73.98041 },
+        { latitude: 40.74152, longitude: -73.97945 },
+        { latitude: 40.74095, longitude: -73.97896 },
+      ],
+      stopCoordinates: {
+        pickup: { latitude: 40.74455, longitude: -73.98448 },
+        dropoff: { latitude: 40.74095, longitude: -73.97896 },
+      },
+    },
+    'savory-spot': {
+      courierLocation: {
+        latitude: 40.74338,
+        longitude: -73.9862,
+      },
+      trackingRoute: [
+        { latitude: 40.7447, longitude: -73.98885 },
+        { latitude: 40.74418, longitude: -73.98824 },
+        { latitude: 40.74382, longitude: -73.9874 },
+        { latitude: 40.74338, longitude: -73.9862 },
+        { latitude: 40.74274, longitude: -73.98492 },
+        { latitude: 40.74198, longitude: -73.98376 },
+      ],
+      stopCoordinates: {
+        pickup: { latitude: 40.7447, longitude: -73.98885 },
+        dropoff: { latitude: 40.74198, longitude: -73.98376 },
+      },
+    },
+    'taco-trail': {
+      courierLocation: {
+        latitude: 40.7207,
+        longitude: -73.9955,
+      },
+      trackingRoute: [
+        { latitude: 40.72148, longitude: -73.9971 },
+        { latitude: 40.7212, longitude: -73.99644 },
+        { latitude: 40.7207, longitude: -73.9955 },
+        { latitude: 40.72004, longitude: -73.99442 },
+        { latitude: 40.71958, longitude: -73.99358 },
+      ],
+      stopCoordinates: {
+        pickup: { latitude: 40.72148, longitude: -73.9971 },
+        dropoff: { latitude: 40.71958, longitude: -73.99358 },
+      },
+    },
+    'grill-lab': {
+      courierLocation: {
+        latitude: 40.70556,
+        longitude: -74.0104,
+      },
+      trackingRoute: [
+        { latitude: 40.70472, longitude: -74.01186 },
+        { latitude: 40.70502, longitude: -74.01125 },
+        { latitude: 40.70556, longitude: -74.0104 },
+        { latitude: 40.70614, longitude: -74.00928 },
+        { latitude: 40.70662, longitude: -74.00844 },
+      ],
+      stopCoordinates: {
+        pickup: { latitude: 40.70472, longitude: -74.01186 },
+        dropoff: { latitude: 40.70662, longitude: -74.00844 },
+      },
+    },
+  };
+
+  return presets[restaurantId as keyof typeof presets] ?? presets['brooklyn-bites'];
+}
+
+function hydrateTrackingOrder(order: Order): Order {
+  const geometry = createTrackingGeometry(order.restaurantId);
+
+  return {
+    ...order,
+    courierLocation: order.courierLocation ?? geometry.courierLocation,
+    trackingRoute:
+      order.trackingRoute && order.trackingRoute.length > 0
+        ? order.trackingRoute
+        : geometry.trackingRoute,
+    trackingStops: order.trackingStops.map((stop, index) => {
+      const fallbackCoordinate =
+        stop.coordinate ??
+        geometry.stopCoordinates[
+          stop.id === 'pickup' || index === 0 ? 'pickup' : 'dropoff'
+        ];
+
+      return fallbackCoordinate
+        ? {
+            ...stop,
+            coordinate: fallbackCoordinate,
+          }
+        : stop;
+    }),
+  };
+}
+
+function mergeOrderWithSeed(order: Order, seedOrder?: Order): Order {
+  if (!seedOrder) {
+    return hydrateTrackingOrder(order);
+  }
+
+  return hydrateTrackingOrder({
+    ...seedOrder,
+    ...order,
+    courier: {
+      ...seedOrder.courier,
+      ...order.courier,
+    },
+    trackingStops:
+      order.trackingStops?.length > 0
+        ? order.trackingStops.map((stop) => {
+            const seedStop = seedOrder.trackingStops.find(
+              (candidate) => candidate.id === stop.id
+            );
+
+            return seedStop ? { ...seedStop, ...stop } : stop;
+          })
+        : seedOrder.trackingStops,
+  });
+}
+
 function mergeState(snapshot: Partial<AppState> | null): AppState {
   const seed = createInitialAppState();
 
@@ -108,7 +239,13 @@ function mergeState(snapshot: Partial<AppState> | null): AppState {
       items: snapshot?.cart?.items ?? seed.cart.items,
     },
     notifications: snapshot?.notifications ?? seed.notifications,
-    orders: snapshot?.orders ?? seed.orders,
+    orders:
+      snapshot?.orders?.map((order) =>
+        mergeOrderWithSeed(
+          order,
+          seed.orders.find((candidate) => candidate.id === order.id)
+        )
+      ) ?? seed.orders,
     bookings: snapshot?.bookings ?? seed.bookings,
     addresses: snapshot?.addresses ?? seed.addresses,
     paymentMethods: snapshot?.paymentMethods ?? seed.paymentMethods,
@@ -423,6 +560,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           const discountAmount = coupon ? Math.min(subtotal * 0.15, 8) : 0;
           const total = subtotal + deliveryFee + serviceFee - discountAmount;
           createdOrderId = `#FD${Math.floor(100000 + Math.random() * 899999)}`;
+          const trackingGeometry = createTrackingGeometry(restaurant?.id);
 
           return {
             ...current,
@@ -448,12 +586,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                   phone: '+1 (212) 555-0119',
                   vehicle: 'Scooter',
                 },
+                courierLocation: trackingGeometry.courierLocation,
                 trackingStops: [
                   {
                     id: 'pickup',
                     label: restaurant?.name ?? 'Restaurant',
                     address: restaurant?.address ?? '789 Park Avenue, New York, NY',
                     complete: true,
+                    coordinate: trackingGeometry.stopCoordinates.pickup,
                   },
                   {
                     id: 'dropoff',
@@ -462,8 +602,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                       current.addresses.find((address) => address.id === addressId)?.line1 ??
                       '8502 Preston Rd',
                     complete: false,
+                    coordinate: trackingGeometry.stopCoordinates.dropoff,
                   },
                 ],
+                trackingRoute: trackingGeometry.trackingRoute,
               },
               ...current.orders,
             ],
