@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
 import { Linking, Platform, View } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Circle, Marker, Polyline } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/ui/app-text';
@@ -59,47 +59,51 @@ const fallbackTrackingGeometryByOrderId: Record<
 > = {
   '#FD785462': {
     courierLocation: {
-      latitude: 40.74286,
-      longitude: -73.98174,
+      latitude: 40.743291,
+      longitude: -73.980148,
     },
     trackingRoute: [
-      {
-        latitude: 40.74455,
-        longitude: -73.98448,
-      },
-      {
-        latitude: 40.74411,
-        longitude: -73.98392,
-      },
-      {
-        latitude: 40.74358,
-        longitude: -73.98328,
-      },
-      {
-        latitude: 40.74286,
-        longitude: -73.98174,
-      },
-      {
-        latitude: 40.7421,
-        longitude: -73.98041,
-      },
-      {
-        latitude: 40.74152,
-        longitude: -73.97945,
-      },
-      {
-        latitude: 40.74095,
-        longitude: -73.97896,
-      },
+      { latitude: 40.74437, longitude: -73.984611 },
+      { latitude: 40.744595, longitude: -73.985149 },
+      { latitude: 40.744631, longitude: -73.985243 },
+      { latitude: 40.744685, longitude: -73.985204 },
+      { latitude: 40.74519, longitude: -73.984838 },
+      { latitude: 40.74525, longitude: -73.984794 },
+      { latitude: 40.745208, longitude: -73.984694 },
+      { latitude: 40.744625, longitude: -73.983315 },
+      { latitude: 40.744597, longitude: -73.983245 },
+      { latitude: 40.744546, longitude: -73.983119 },
+      { latitude: 40.744511, longitude: -73.983035 },
+      { latitude: 40.743946, longitude: -73.981699 },
+      { latitude: 40.743932, longitude: -73.981666 },
+      { latitude: 40.743889, longitude: -73.981565 },
+      { latitude: 40.743845, longitude: -73.981462 },
+      { latitude: 40.743291, longitude: -73.980148 },
+      { latitude: 40.743267, longitude: -73.980091 },
+      { latitude: 40.743215, longitude: -73.979969 },
+      { latitude: 40.743151, longitude: -73.979818 },
+      { latitude: 40.742536, longitude: -73.97835 },
+      { latitude: 40.742327, longitude: -73.977858 },
+      { latitude: 40.742274, longitude: -73.97772 },
+      { latitude: 40.742212, longitude: -73.977764 },
+      { latitude: 40.741708, longitude: -73.978132 },
+      { latitude: 40.741655, longitude: -73.97817 },
+      { latitude: 40.741582, longitude: -73.978225 },
+      { latitude: 40.74124, longitude: -73.978498 },
+      { latitude: 40.741142, longitude: -73.978571 },
+      { latitude: 40.7411, longitude: -73.978601 },
+      { latitude: 40.741043, longitude: -73.978642 },
+      { latitude: 40.74098, longitude: -73.978688 },
+      { latitude: 40.740871, longitude: -73.978766 },
     ],
     stopCoordinates: {
       pickup: {
-        latitude: 40.74455,
-        longitude: -73.98448,
+        latitude: 40.74437,
+        longitude: -73.984611,
       },
       dropoff: {
-        latitude: 40.74095,
-        longitude: -73.97896,
+        latitude: 40.740871,
+        longitude: -73.978766,
       },
     },
   },
@@ -121,46 +125,65 @@ function getTrackingRegion(points: MapCoordinate[]) {
   };
 }
 
-function MapMarker({
-  icon,
-  active,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  active?: boolean;
-}) {
+function MarkerLegend() {
   const theme = useAppTheme();
-  const pinBackground = active ? theme.colors.primary : '#FFFFFF';
+
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        bottom: 92,
+        left: 18,
+        borderRadius: theme.radii.pill,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        backgroundColor: 'rgba(255,255,255,0.97)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        ...theme.shadow.soft,
+      }}>
+      {[
+        { label: 'Shop', color: theme.colors.primary },
+        { label: 'Courier', color: theme.colors.secondary },
+        { label: 'Home', color: '#FFB84D' },
+      ].map((item) => (
+        <View
+          key={item.label}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: item.color,
+            }}
+          />
+          <AppText variant="caption">{item.label}</AppText>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function CourierMarker() {
+  const theme = useAppTheme();
 
   return (
     <View style={{ alignItems: 'center' }}>
       <View
         style={{
-          width: 30,
-          height: 30,
-          borderRadius: 15,
-          backgroundColor: pinBackground,
-          borderWidth: 2,
-          borderColor: theme.colors.primary,
+          width: 34,
+          height: 34,
+          borderRadius: 17,
+          backgroundColor: theme.colors.secondary,
+          borderWidth: 2.5,
+          borderColor: '#FFFFFF',
           alignItems: 'center',
           justifyContent: 'center',
           ...theme.shadow.soft,
         }}>
-        <Ionicons
-          name={icon}
-          size={14}
-          color={active ? '#FFFFFF' : theme.colors.primary}
-        />
-        {active ? (
-          <View
-            style={{
-              position: 'absolute',
-              inset: -7,
-              borderRadius: 22,
-              borderWidth: 1,
-              borderColor: 'rgba(255,107,44,0.22)',
-            }}
-          />
-        ) : null}
+        <Ionicons name="bicycle-outline" size={16} color="#FFFFFF" />
       </View>
       <View
         style={{
@@ -168,10 +191,10 @@ function MapMarker({
           width: 10,
           height: 10,
           borderBottomLeftRadius: 3,
-          backgroundColor: pinBackground,
-          borderBottomWidth: 2,
-          borderRightWidth: 2,
-          borderColor: theme.colors.primary,
+          backgroundColor: theme.colors.secondary,
+          borderBottomWidth: 2.5,
+          borderRightWidth: 2.5,
+          borderColor: '#FFFFFF',
           transform: [{ rotate: '45deg' }],
         }}
       />
@@ -256,10 +279,10 @@ function TrackingMap({ order }: { order: Order }) {
       mapRef.current?.fitToCoordinates(points, {
         animated: false,
         edgePadding: {
-          top: 72,
-          right: 44,
+          top: 94,
+          right: 48,
           bottom: 180,
-          left: 44,
+          left: 56,
         },
       });
     }, 350);
@@ -296,27 +319,42 @@ function TrackingMap({ order }: { order: Order }) {
         showsTraffic={false}
         loadingEnabled
       >
-        <Polyline coordinates={route} strokeColor="rgba(255,255,255,0.96)" strokeWidth={11} />
+        <Polyline coordinates={route} strokeColor="rgba(255,255,255,0.98)" strokeWidth={12} />
         <Polyline coordinates={route} strokeColor={theme.colors.primary} strokeWidth={5} />
+        <Circle
+          center={courier}
+          radius={95}
+          fillColor="rgba(255,107,44,0.14)"
+          strokeColor="rgba(255,107,44,0.28)"
+          strokeWidth={1}
+        />
 
-        <Marker coordinate={pickup} anchor={{ x: 0.5, y: 0.95 }} tracksViewChanges={false}>
-          <MapMarker icon="restaurant-outline" />
-        </Marker>
-        <Marker coordinate={destination} anchor={{ x: 0.5, y: 0.95 }} tracksViewChanges={false}>
-          <MapMarker icon="home-outline" />
-        </Marker>
-        <Marker coordinate={courier} anchor={{ x: 0.5, y: 0.95 }} tracksViewChanges={false}>
-          <MapMarker icon="bicycle-outline" active />
+        <Marker
+          coordinate={pickup}
+          pinColor={theme.colors.primary}
+          title={order.trackingStops[0]?.label ?? 'Shop'}
+          description="Pickup location"
+        />
+        <Marker
+          coordinate={destination}
+          pinColor="#FFB84D"
+          title={order.trackingStops[order.trackingStops.length - 1]?.label ?? 'Home'}
+          description="Drop-off"
+        />
+        <Marker coordinate={courier} anchor={{ x: 0.5, y: 0.95 }}>
+          <CourierMarker />
         </Marker>
       </MapView>
+
+      <MarkerLegend />
 
       <View
         style={{
           position: 'absolute',
           top: 20,
-          right: 16,
+          right: 18,
           borderRadius: theme.radii.pill,
-          paddingHorizontal: 10,
+          paddingHorizontal: 12,
           paddingVertical: 7,
           backgroundColor: 'rgba(255,255,255,0.97)',
           flexDirection: 'row',
@@ -332,7 +370,7 @@ function TrackingMap({ order }: { order: Order }) {
             backgroundColor: theme.colors.primary,
           }}
         />
-        <AppText variant="caption">Live</AppText>
+        <AppText variant="caption">Live route</AppText>
       </View>
 
       <View

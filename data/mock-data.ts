@@ -540,8 +540,8 @@ const ordersSeed: Order[] = [
       vehicle: 'Scooter',
     },
     courierLocation: {
-      latitude: 40.74286,
-      longitude: -73.98174,
+      latitude: 40.743291,
+      longitude: -73.980148,
     },
     trackingStops: [
       {
@@ -550,8 +550,8 @@ const ordersSeed: Order[] = [
         address: '789 Park Avenue, New York, NY',
         complete: true,
         coordinate: {
-          latitude: 40.74455,
-          longitude: -73.98448,
+          latitude: 40.74437,
+          longitude: -73.984611,
         },
       },
       {
@@ -560,39 +560,139 @@ const ordersSeed: Order[] = [
         address: '8502 Preston Rd, Inglewood, NY',
         complete: false,
         coordinate: {
-          latitude: 40.74095,
-          longitude: -73.97896,
+          latitude: 40.740871,
+          longitude: -73.978766,
         },
       },
     ],
     trackingRoute: [
       {
-        latitude: 40.74455,
-        longitude: -73.98448,
+        latitude: 40.74437,
+        longitude: -73.984611,
       },
       {
-        latitude: 40.74411,
-        longitude: -73.98392,
+        latitude: 40.744595,
+        longitude: -73.985149,
       },
       {
-        latitude: 40.74358,
-        longitude: -73.98328,
+        latitude: 40.744631,
+        longitude: -73.985243,
       },
       {
-        latitude: 40.74286,
-        longitude: -73.98174,
+        latitude: 40.744685,
+        longitude: -73.985204,
       },
       {
-        latitude: 40.7421,
-        longitude: -73.98041,
+        latitude: 40.74519,
+        longitude: -73.984838,
       },
       {
-        latitude: 40.74152,
-        longitude: -73.97945,
+        latitude: 40.74525,
+        longitude: -73.984794,
       },
       {
-        latitude: 40.74095,
-        longitude: -73.97896,
+        latitude: 40.745208,
+        longitude: -73.984694,
+      },
+      {
+        latitude: 40.744625,
+        longitude: -73.983315,
+      },
+      {
+        latitude: 40.744597,
+        longitude: -73.983245,
+      },
+      {
+        latitude: 40.744546,
+        longitude: -73.983119,
+      },
+      {
+        latitude: 40.744511,
+        longitude: -73.983035,
+      },
+      {
+        latitude: 40.743946,
+        longitude: -73.981699,
+      },
+      {
+        latitude: 40.743932,
+        longitude: -73.981666,
+      },
+      {
+        latitude: 40.743889,
+        longitude: -73.981565,
+      },
+      {
+        latitude: 40.743845,
+        longitude: -73.981462,
+      },
+      {
+        latitude: 40.743291,
+        longitude: -73.980148,
+      },
+      {
+        latitude: 40.743267,
+        longitude: -73.980091,
+      },
+      {
+        latitude: 40.743215,
+        longitude: -73.979969,
+      },
+      {
+        latitude: 40.743151,
+        longitude: -73.979818,
+      },
+      {
+        latitude: 40.742536,
+        longitude: -73.97835,
+      },
+      {
+        latitude: 40.742327,
+        longitude: -73.977858,
+      },
+      {
+        latitude: 40.742274,
+        longitude: -73.97772,
+      },
+      {
+        latitude: 40.742212,
+        longitude: -73.977764,
+      },
+      {
+        latitude: 40.741708,
+        longitude: -73.978132,
+      },
+      {
+        latitude: 40.741655,
+        longitude: -73.97817,
+      },
+      {
+        latitude: 40.741582,
+        longitude: -73.978225,
+      },
+      {
+        latitude: 40.74124,
+        longitude: -73.978498,
+      },
+      {
+        latitude: 40.741142,
+        longitude: -73.978571,
+      },
+      {
+        latitude: 40.7411,
+        longitude: -73.978601,
+      },
+      {
+        latitude: 40.741043,
+        longitude: -73.978642,
+      },
+      {
+        latitude: 40.74098,
+        longitude: -73.978688,
+      },
+      {
+        latitude: 40.740871,
+        longitude: -73.978766,
       },
     ],
   },
