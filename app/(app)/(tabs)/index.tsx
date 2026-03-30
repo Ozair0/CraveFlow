@@ -79,7 +79,14 @@ export default function HomeScreen() {
 
       <View style={{ gap: theme.spacing.md }}>
         <SectionHeader title="Exclusive Offers" actionLabel="See All" onActionPress={() => router.push('/(app)/coupons')} />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.md }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            gap: theme.spacing.md,
+            paddingHorizontal: 2,
+            paddingVertical: 8,
+          }}>
           {offers.map((offer) => (
             <OfferBanner key={offer.id} offer={offer} onPress={() => router.push('/(app)/coupons')} />
           ))}
@@ -104,7 +111,14 @@ export default function HomeScreen() {
 
       <View style={{ gap: theme.spacing.md }}>
         <SectionHeader title="Popular Dishes" actionLabel="See All" onActionPress={() => router.push('/(app)/search')} />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.md }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            gap: theme.spacing.md,
+            paddingHorizontal: 2,
+            paddingVertical: 8,
+          }}>
           {filteredPopular.map((dish) => (
             <DishCard
               key={dish.id}

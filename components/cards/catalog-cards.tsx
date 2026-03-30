@@ -22,7 +22,14 @@ export function OfferBanner({
   const theme = useAppTheme();
 
   return (
-    <Pressable onPress={onPress} style={{ width: 290 }}>
+    <Pressable
+      onPress={onPress}
+      style={{
+        width: 290,
+        borderRadius: theme.radii.xl,
+        overflow: 'visible',
+        ...theme.shadow.soft,
+      }}>
       <LinearGradient
         colors={[theme.colors.primary, theme.colors.primaryDark]}
         style={{
@@ -95,81 +102,89 @@ export function DishCard({
       style={{
         width: wide ? '100%' : 164,
         borderRadius: theme.radii.lg,
-        backgroundColor: theme.colors.card,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: theme.colors.border,
+        overflow: 'visible',
         ...theme.shadow.soft,
       }}>
-      <View>
-        <Image
-          source={dish.image}
-          style={{
-            width: '100%',
-            height: wide ? 132 : 118,
-          }}
-          contentFit="cover"
-        />
-        {dish.offerLabel ? (
-          <View
+      <View
+        style={{
+          borderRadius: theme.radii.lg,
+          backgroundColor: theme.colors.card,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+        }}>
+        <View>
+          <Image
+            source={dish.image}
             style={{
-              position: 'absolute',
-              left: 10,
-              top: 10,
-              backgroundColor: 'rgba(58, 182, 107, 0.96)',
-              borderRadius: 999,
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-            }}>
-            <AppText variant="caption" color="#FFFFFF">
-              {dish.offerLabel}
-            </AppText>
-          </View>
-        ) : null}
-        {onToggleFavorite ? (
-          <IconButton
-            name={isFavorite ? 'heart' : 'heart-outline'}
-            size={18}
-            color={isFavorite ? theme.colors.primary : theme.colors.text}
-            onPress={onToggleFavorite}
-            style={{ position: 'absolute', right: 10, top: 10 }}
+              width: '100%',
+              height: wide ? 132 : 118,
+            }}
+            contentFit="cover"
           />
-        ) : null}
-      </View>
-
-      <View style={{ padding: theme.spacing.md, gap: 8 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <AppText variant="label" style={{ flex: 1 }} numberOfLines={1}>
-            {dish.name}
-          </AppText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Ionicons name="star" size={14} color={theme.colors.warning} />
-            <AppText variant="caption">{dish.rating.toFixed(1)}</AppText>
-          </View>
-        </View>
-        <AppText variant="caption" color={theme.colors.textMuted} numberOfLines={wide ? 2 : 1}>
-          {restaurant?.name ?? 'Restaurant'}
-        </AppText>
-        {wide ? (
-          <AppText variant="caption" color={theme.colors.textMuted} numberOfLines={2}>
-            {dish.shortDescription}
-          </AppText>
-        ) : null}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <AppText variant="label">{formatCurrency(startingPrice)}</AppText>
-          {footerAction ?? (
+          {dish.offerLabel ? (
             <View
               style={{
-                width: 28,
-                height: 28,
-                borderRadius: 14,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: theme.colors.primary,
+                position: 'absolute',
+                left: 10,
+                top: 10,
+                backgroundColor: 'rgba(58, 182, 107, 0.96)',
+                borderRadius: 999,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
               }}>
-              <Ionicons name="add" size={16} color="#FFFFFF" />
+              <AppText variant="caption" color="#FFFFFF">
+                {dish.offerLabel}
+              </AppText>
             </View>
-          )}
+          ) : null}
+          {onToggleFavorite ? (
+            <IconButton
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={18}
+              color={isFavorite ? theme.colors.primary : theme.colors.text}
+              onPress={onToggleFavorite}
+              style={{ position: 'absolute', right: 10, top: 10 }}
+            />
+          ) : null}
+        </View>
+
+        <View style={{ padding: theme.spacing.md, gap: 8 }}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <AppText variant="label" style={{ flex: 1 }} numberOfLines={1}>
+              {dish.name}
+            </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Ionicons name="star" size={14} color={theme.colors.warning} />
+              <AppText variant="caption">{dish.rating.toFixed(1)}</AppText>
+            </View>
+          </View>
+          <AppText variant="caption" color={theme.colors.textMuted} numberOfLines={wide ? 2 : 1}>
+            {restaurant?.name ?? 'Restaurant'}
+          </AppText>
+          {wide ? (
+            <AppText variant="caption" color={theme.colors.textMuted} numberOfLines={2}>
+              {dish.shortDescription}
+            </AppText>
+          ) : null}
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <AppText variant="label">{formatCurrency(startingPrice)}</AppText>
+            {footerAction ?? (
+              <View
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: theme.colors.primary,
+                }}>
+                <Ionicons name="add" size={16} color="#FFFFFF" />
+              </View>
+            )}
+          </View>
         </View>
       </View>
     </Pressable>
@@ -193,55 +208,63 @@ export function RestaurantCard({
     <Pressable
       onPress={onPress}
       style={{
-        flexDirection: 'row',
-        backgroundColor: theme.colors.card,
+        width: '100%',
         borderRadius: theme.radii.lg,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: theme.colors.border,
+        overflow: 'visible',
         ...theme.shadow.soft,
       }}>
-      <Image source={restaurant.image} style={{ width: 112, height: 118 }} contentFit="cover" />
-      <View style={{ flex: 1, padding: theme.spacing.md, gap: 8 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
-          <View style={{ flex: 1 }}>
-            <AppText variant="label" numberOfLines={1}>
-              {restaurant.name}
-            </AppText>
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {restaurant.cuisine}
+      <View
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          backgroundColor: theme.colors.card,
+          borderRadius: theme.radii.lg,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+        }}>
+        <Image source={restaurant.image} style={{ width: 112, height: 118 }} contentFit="cover" />
+        <View style={{ flex: 1, padding: theme.spacing.md, gap: 8 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <AppText variant="label" numberOfLines={1}>
+                {restaurant.name}
+              </AppText>
+              <AppText variant="caption" color={theme.colors.textMuted}>
+                {restaurant.cuisine}
+              </AppText>
+            </View>
+            {onToggleFavorite ? (
+              <IconButton
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={18}
+                color={isFavorite ? theme.colors.primary : theme.colors.text}
+                onPress={onToggleFavorite}
+              />
+            ) : null}
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Ionicons name="star" size={14} color={theme.colors.warning} />
+            <AppText variant="caption">
+              {formatDishRating(restaurant.rating, restaurant.reviewCount)}
             </AppText>
           </View>
-          {onToggleFavorite ? (
-            <IconButton
-              name={isFavorite ? 'heart' : 'heart-outline'}
-              size={18}
-              color={isFavorite ? theme.colors.primary : theme.colors.text}
-              onPress={onToggleFavorite}
-            />
-          ) : null}
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Ionicons name="star" size={14} color={theme.colors.warning} />
-          <AppText variant="caption">
-            {formatDishRating(restaurant.rating, restaurant.reviewCount)}
+          <AppText variant="caption" color={theme.colors.textMuted} numberOfLines={1}>
+            {restaurant.address}
           </AppText>
-        </View>
-        <AppText variant="caption" color={theme.colors.textMuted} numberOfLines={1}>
-          {restaurant.address}
-        </AppText>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Ionicons name="time-outline" size={14} color={theme.colors.textSoft} />
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {formatMinutesRange(restaurant.deliveryTimeMinutes)}
-            </AppText>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Ionicons name="bicycle-outline" size={14} color={theme.colors.textSoft} />
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {restaurant.deliveryFeeLabel}
-            </AppText>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Ionicons name="time-outline" size={14} color={theme.colors.textSoft} />
+              <AppText variant="caption" color={theme.colors.textMuted}>
+                {formatMinutesRange(restaurant.deliveryTimeMinutes)}
+              </AppText>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Ionicons name="bicycle-outline" size={14} color={theme.colors.textSoft} />
+              <AppText variant="caption" color={theme.colors.textMuted}>
+                {restaurant.deliveryFeeLabel}
+              </AppText>
+            </View>
           </View>
         </View>
       </View>
