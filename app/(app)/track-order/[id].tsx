@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Linking, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,93 +11,241 @@ import { PrimaryButton } from '@/components/ui/primary-button';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useAppState } from '@/providers/app-provider';
 
-function TrackingMap() {
+const routePoints = [
+  { x: 74, y: 96 },
+  { x: 128, y: 124 },
+  { x: 182, y: 154 },
+  { x: 214, y: 196 },
+  { x: 266, y: 246 },
+];
+
+const mapRoads = [
+  { top: 18, left: -24, width: 168, height: 46, rotate: '16deg' },
+  { top: 34, left: 160, width: 198, height: 48, rotate: '-22deg' },
+  { top: 106, left: -10, width: 210, height: 42, rotate: '-18deg' },
+  { top: 118, left: 180, width: 166, height: 42, rotate: '18deg' },
+  { top: 214, left: -36, width: 184, height: 44, rotate: '22deg' },
+  { top: 238, left: 122, width: 238, height: 46, rotate: '-16deg' },
+  { top: 74, left: 72, width: 56, height: 230, rotate: '0deg' },
+  { top: 24, left: 222, width: 52, height: 262, rotate: '0deg' },
+];
+
+function buildSegment(
+  start: (typeof routePoints)[number],
+  end: (typeof routePoints)[number]
+) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const width = Math.hypot(dx, dy);
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+  return {
+    left: start.x,
+    top: start.y,
+    width,
+    angle,
+  };
+}
+
+function MapPin({
+  top,
+  left,
+  active,
+  icon,
+}: {
+  top: number;
+  left: number;
+  active?: boolean;
+  icon?: keyof typeof Ionicons.glyphMap;
+}) {
   const theme = useAppTheme();
+  const pinBackground = active ? theme.colors.primary : '#FFF7F1';
 
   return (
     <View
       style={{
-        height: 360,
-        borderRadius: 34,
-        backgroundColor: theme.colors.surface,
-        overflow: 'hidden',
+        position: 'absolute',
+        top,
+        left,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: pinBackground,
+        borderWidth: 2,
+        borderColor: theme.colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...theme.shadow.soft,
       }}>
-      {Array.from({ length: 7 }).map((_, rowIndex) => (
+      {icon ? (
+        <Ionicons name={icon} size={14} color={active ? '#FFFFFF' : theme.colors.primary} />
+      ) : (
         <View
-          key={`row-${rowIndex}`}
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            backgroundColor: active ? '#FFFFFF' : theme.colors.primary,
+          }}
+        />
+      )}
+      <View
+        style={{
+          position: 'absolute',
+          bottom: -8,
+          width: 10,
+          height: 10,
+          borderBottomLeftRadius: 3,
+          backgroundColor: pinBackground,
+          borderBottomWidth: 2,
+          borderRightWidth: 2,
+          borderColor: theme.colors.primary,
+          transform: [{ rotate: '45deg' }],
+        }}
+      />
+      {active ? (
+        <View
           style={{
             position: 'absolute',
-            top: rowIndex * 52,
-            left: 0,
-            right: 0,
-            height: 1,
-            backgroundColor: theme.colors.border,
-            opacity: 0.5,
+            inset: -6,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: 'rgba(255,107,44,0.22)',
+          }}
+        />
+      ) : null}
+    </View>
+  );
+}
+
+function TrackingMap() {
+  const theme = useAppTheme();
+  const routeSegments = routePoints.slice(0, -1).map((point, index) => buildSegment(point, routePoints[index + 1]));
+
+  return (
+    <View
+      style={{
+        height: 390,
+        borderRadius: 34,
+        backgroundColor: '#EEE7DE',
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+      }}>
+      <LinearGradient
+        colors={['#F9F4EE', '#F1E9E1']}
+        style={{ position: 'absolute', inset: 0 }}
+      />
+
+      {mapRoads.map((road, index) => (
+        <View
+          key={`road-${index}`}
+          style={{
+            position: 'absolute',
+            top: road.top,
+            left: road.left,
+            width: road.width,
+            height: road.height,
+            borderRadius: 999,
+            backgroundColor: 'rgba(255,255,255,0.94)',
+            borderWidth: 1,
+            borderColor: 'rgba(233,221,209,0.95)',
+            transform: [{ rotate: road.rotate }],
           }}
         />
       ))}
-      {Array.from({ length: 6 }).map((_, columnIndex) => (
-        <View
-          key={`column-${columnIndex}`}
-          style={{
-            position: 'absolute',
-            left: columnIndex * 58,
-            top: 0,
-            bottom: 0,
-            width: 1,
-            backgroundColor: theme.colors.border,
-            opacity: 0.5,
-          }}
-        />
-      ))}
+
       {[
-        { width: 130, top: 96, left: 86, rotate: '25deg' },
-        { width: 78, top: 150, left: 186, rotate: '-35deg' },
-      ].map((line, index) => (
+        { top: 48, left: 28, width: 78, height: 54 },
+        { top: 58, left: 132, width: 62, height: 76 },
+        { top: 72, left: 282, width: 46, height: 64 },
+        { top: 170, left: 24, width: 94, height: 62 },
+        { top: 174, left: 236, width: 82, height: 56 },
+        { top: 280, left: 40, width: 68, height: 46 },
+        { top: 290, left: 160, width: 74, height: 54 },
+      ].map((block, index) => (
         <View
-          key={index}
+          key={`block-${index}`}
           style={{
             position: 'absolute',
-            top: line.top,
-            left: line.left,
-            width: line.width,
-            height: 4,
+            top: block.top,
+            left: block.left,
+            width: block.width,
+            height: block.height,
+            borderRadius: 20,
+            backgroundColor: 'rgba(233, 224, 214, 0.75)',
+          }}
+        />
+      ))}
+
+      {routeSegments.map((segment, index) => (
+        <View
+          key={`route-shell-${index}`}
+          style={{
+            position: 'absolute',
+            left: segment.left,
+            top: segment.top,
+            width: segment.width,
+            height: 12,
+            borderRadius: 999,
+            backgroundColor: 'rgba(255,255,255,0.92)',
+            transform: [{ rotate: `${segment.angle}deg` }, { translateY: -6 }],
+          }}
+        />
+      ))}
+      {routeSegments.map((segment, index) => (
+        <View
+          key={`route-core-${index}`}
+          style={{
+            position: 'absolute',
+            left: segment.left,
+            top: segment.top,
+            width: segment.width,
+            height: 5,
             borderRadius: 999,
             backgroundColor: theme.colors.secondary,
-            transform: [{ rotate: line.rotate }],
+            transform: [{ rotate: `${segment.angle}deg` }, { translateY: -2.5 }],
           }}
         />
       ))}
-      {[
-        { top: 86, left: 74 },
-        { top: 146, left: 198 },
-        { top: 192, left: 260 },
-      ].map((pin, index) => (
+
+      <MapPin top={78} left={56} />
+      <MapPin top={182} left={198} active icon="bicycle-outline" />
+      <MapPin top={232} left={254} />
+
+      <View
+        style={{
+          position: 'absolute',
+          top: 24,
+          right: 24,
+          borderRadius: theme.radii.pill,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          backgroundColor: 'rgba(255,255,255,0.96)',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+          ...theme.shadow.soft,
+        }}>
         <View
-          key={index}
           style={{
-            position: 'absolute',
-            top: pin.top,
-            left: pin.left,
-            width: 28,
-            height: 28,
-            borderRadius: 14,
-            backgroundColor: '#FFF2EA',
-            borderWidth: 2,
-            borderColor: theme.colors.primary,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <View
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
-              backgroundColor: theme.colors.primary,
-            }}
-          />
-        </View>
-      ))}
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: theme.colors.primary,
+          }}
+        />
+        <AppText variant="caption">Live route</AppText>
+      </View>
+
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 82,
+          right: 20,
+        }}>
+        <IconButton name="locate-outline" size={18} />
+      </View>
     </View>
   );
 }
@@ -143,6 +292,8 @@ export default function TrackOrderScreen() {
             backgroundColor: theme.colors.card,
             padding: theme.spacing.lg,
             gap: theme.spacing.md,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
             ...theme.shadow.card,
           }}>
           <View>
