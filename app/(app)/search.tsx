@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { startTransition, useDeferredValue, useMemo, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import { DishCard, RestaurantCard } from '@/components/cards/catalog-cards';
@@ -18,9 +18,17 @@ import { useAppState } from '@/providers/app-provider';
 export default function SearchScreen() {
   const theme = useAppTheme();
   const { appState, toggleFavoriteDish, toggleFavoriteRestaurant } = useAppState();
-  const [query, setQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const params = useLocalSearchParams<{ q?: string; category?: string }>();
+  const initialQuery = typeof params.q === 'string' ? params.q : '';
+  const initialCategory = typeof params.category === 'string' ? params.category : 'all';
+  const [query, setQuery] = useState(initialQuery);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const deferredQuery = useDeferredValue(query);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+    setSelectedCategory(initialCategory);
+  }, [initialCategory, initialQuery]);
 
   const dishResults = useMemo(
     () => searchDishes(deferredQuery, selectedCategory),
@@ -45,7 +53,10 @@ export default function SearchScreen() {
 
       <SearchBar value={query} onChangeText={setQuery} placeholder="Search food, cuisines, restaurants..." />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.sm }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: theme.spacing.sm, alignItems: 'center' }}>
         <Chip label="All" selected={selectedCategory === 'all'} onPress={() => startTransition(() => setSelectedCategory('all'))} />
         {categories.map((category) => (
           <Chip

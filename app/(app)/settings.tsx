@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { Switch, View } from 'react-native';
 
+import { MenuRow } from '@/components/cards/profile-cards';
 import { PageHeader } from '@/components/layout/page-header';
 import { Screen } from '@/components/layout/screen';
 import { AppText } from '@/components/ui/app-text';
@@ -68,22 +69,35 @@ export default function SettingsScreen() {
                   setting.key as 'pushNotifications' | 'emailNotifications' | 'locationEnabled'
                 )
               }
+              trackColor={{
+                false: theme.colors.borderStrong,
+                true: theme.colors.primary,
+              }}
+              thumbColor={theme.colors.card}
             />
           </View>
         ))}
       </View>
 
-      <View
-        style={{
-          borderRadius: theme.radii.xl,
-          backgroundColor: theme.colors.card,
-          padding: theme.spacing.lg,
-          gap: theme.spacing.sm,
-        }}>
-        <AppText variant="title">About</AppText>
-        <AppText variant="body" color={theme.colors.textMuted}>
-          CraveFlow 1.0 brings food delivery, real-time tracking, favorite dishes, and restaurant bookings into one polished flow.
-        </AppText>
+      <View style={{ gap: theme.spacing.md }}>
+        <MenuRow
+          title="Help Center"
+          subtitle="Support details, FAQs, and contact options"
+          icon="help-buoy-outline"
+          onPress={() => router.push('/(app)/help')}
+        />
+        <MenuRow
+          title="Privacy & Terms"
+          subtitle="Understand how CraveFlow handles data and orders"
+          icon="document-text-outline"
+          onPress={() => router.push('/(app)/legal')}
+        />
+        <MenuRow
+          title="About CraveFlow"
+          subtitle="Version, product overview, and build details"
+          icon="information-circle-outline"
+          onPress={() => router.push('/(app)/about')}
+        />
       </View>
     </Screen>
   );

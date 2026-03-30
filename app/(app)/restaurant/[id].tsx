@@ -114,18 +114,22 @@ export default function RestaurantScreen() {
             {restaurant.bookingAvailable ? (
               <PrimaryButton
                 label="Reserve Table"
+                fullWidth={false}
                 onPress={() =>
                   router.push({
                     pathname: '/(app)/reserve/[restaurantId]',
                     params: { restaurantId: restaurant.id },
                   })
                 }
+                style={{ flex: 1 }}
               />
             ) : null}
             <PrimaryButton
               label="View Orders"
               variant="outline"
+              fullWidth={false}
               onPress={() => router.push('/(app)/orders')}
+              style={{ flex: 1 }}
             />
           </View>
 

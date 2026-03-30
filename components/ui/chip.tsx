@@ -26,6 +26,7 @@ export function Chip({ label, selected, icon, color, style, ...props }: ChipProp
     <Pressable
       style={(state) => [
         {
+          alignSelf: 'flex-start',
           paddingHorizontal: theme.spacing.md,
           paddingVertical: theme.spacing.sm,
           borderRadius: theme.radii.pill,

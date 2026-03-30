@@ -37,6 +37,9 @@ export default function AppLayout() {
       <Stack.Screen name="addresses" />
       <Stack.Screen name="payment-methods" />
       <Stack.Screen name="settings" />
+      <Stack.Screen name="help" />
+      <Stack.Screen name="legal" />
+      <Stack.Screen name="about" />
     </Stack>
   );
 }
