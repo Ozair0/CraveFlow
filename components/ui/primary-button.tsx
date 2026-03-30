@@ -38,7 +38,7 @@ export function PrimaryButton({
   return (
     <Pressable
       disabled={disabled || loading}
-      style={({ pressed }) => [
+      style={(state) => [
         {
           minHeight: 56,
           borderRadius: theme.radii.pill,
@@ -54,10 +54,10 @@ export function PrimaryButton({
               : theme.colors.primaryMuted,
           borderWidth: variant === 'outline' ? 1 : 0,
           borderColor: variant === 'outline' ? theme.colors.borderStrong : 'transparent',
-          opacity: disabled ? 0.5 : pressed ? 0.88 : 1,
+          opacity: disabled ? 0.5 : state.pressed ? 0.88 : 1,
           width: fullWidth ? '100%' : undefined,
         },
-        resolveStyle({ pressed }),
+        resolveStyle(state),
       ]}
       {...props}>
       {loading ? (

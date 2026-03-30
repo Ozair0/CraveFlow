@@ -28,7 +28,7 @@ export function IconButton({
 
   return (
     <Pressable
-      style={({ pressed }) => [
+      style={(state) => [
         {
           width: 42,
           height: 42,
@@ -38,10 +38,10 @@ export function IconButton({
           backgroundColor: filled ? theme.colors.card : 'transparent',
           borderWidth: filled ? 0 : 1,
           borderColor: theme.colors.border,
-          opacity: pressed ? 0.8 : 1,
+          opacity: state.pressed ? 0.8 : 1,
         },
         theme.shadow.soft,
-        resolveStyle({ pressed }),
+        resolveStyle(state),
       ]}
       {...props}>
       <Ionicons name={name} size={size} color={color ?? theme.colors.text} />

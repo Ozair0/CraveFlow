@@ -24,7 +24,7 @@ export function Chip({ label, selected, icon, color, style, ...props }: ChipProp
 
   return (
     <Pressable
-      style={({ pressed }) => [
+      style={(state) => [
         {
           paddingHorizontal: theme.spacing.md,
           paddingVertical: theme.spacing.sm,
@@ -32,9 +32,9 @@ export function Chip({ label, selected, icon, color, style, ...props }: ChipProp
           backgroundColor: selected ? theme.colors.primary : theme.colors.card,
           borderWidth: 1,
           borderColor: selected ? theme.colors.primary : theme.colors.border,
-          opacity: pressed ? 0.88 : 1,
+          opacity: state.pressed ? 0.88 : 1,
         },
-        resolveStyle({ pressed }),
+        resolveStyle(state),
       ]}
       {...props}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
