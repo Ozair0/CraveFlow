@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/use-app-theme';
 
@@ -8,6 +8,9 @@ import { AppText } from '../ui/app-text';
 
 export function WelcomeHero() {
   const theme = useAppTheme();
+  const { height: screenHeight } = useWindowDimensions();
+  const heroHeight = Math.max(340, Math.min(screenHeight * 0.48, 430));
+  const thumbnailSize = heroHeight > 390 ? 84 : 72;
 
   return (
     <View style={{ alignItems: 'center', marginTop: 12, marginBottom: 24 }}>
@@ -34,7 +37,7 @@ export function WelcomeHero() {
         <View
           style={{
             alignSelf: 'stretch',
-            minHeight: 300,
+            height: heroHeight,
             borderRadius: 28,
             backgroundColor: theme.dark ? '#1A1A20' : '#FFF6F0',
             alignItems: 'center',
@@ -98,8 +101,8 @@ export function WelcomeHero() {
                 key={uri}
                 source={uri}
                 style={{
-                  width: 84,
-                  height: 84,
+                  width: thumbnailSize,
+                  height: thumbnailSize,
                   borderRadius: 20,
                   borderWidth: 3,
                   borderColor: theme.colors.card,

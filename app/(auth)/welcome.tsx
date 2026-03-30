@@ -26,7 +26,11 @@ export default function WelcomeScreen() {
   const theme = useAppTheme();
 
   return (
-    <Screen scroll contentContainerStyle={{ paddingBottom: theme.spacing.xxl, justifyContent: 'space-between' }}>
+    <Screen
+      scroll
+      contentContainerStyle={{
+        paddingBottom: theme.spacing.xxl,
+      }}>
       <View>
         <WelcomeHero />
         <HighlightedHeadline />
@@ -39,7 +43,7 @@ export default function WelcomeScreen() {
         </AppText>
       </View>
 
-      <View style={{ gap: theme.spacing.lg, marginTop: theme.spacing.xxl }}>
+      <View style={{ gap: theme.spacing.lg, marginTop: theme.spacing.xl }}>
         <PrimaryButton label="Let's Get Started" onPress={() => router.push('/(auth)/sign-up')} />
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 }}>
           <AppText variant="body" color={theme.colors.textMuted}>
