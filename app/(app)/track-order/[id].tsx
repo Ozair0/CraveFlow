@@ -49,6 +49,16 @@ const trackingMapStyle = [
   },
 ];
 
+const mapUiColors = {
+  overlayBackground: 'rgba(255,250,246,0.96)',
+  overlayBorder: 'rgba(40, 28, 22, 0.08)',
+  overlayText: '#241A15',
+  overlayMuted: '#7E6E63',
+  courier: '#1B1B1F',
+  courierGlow: 'rgba(27,27,31,0.12)',
+  home: '#FFB84D',
+};
+
 const fallbackTrackingGeometryByOrderId: Record<
   string,
   {
@@ -137,7 +147,9 @@ function MarkerLegend() {
         borderRadius: theme.radii.pill,
         paddingHorizontal: 12,
         paddingVertical: 10,
-        backgroundColor: 'rgba(255,255,255,0.97)',
+        backgroundColor: mapUiColors.overlayBackground,
+        borderWidth: 1,
+        borderColor: mapUiColors.overlayBorder,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
@@ -145,8 +157,8 @@ function MarkerLegend() {
       }}>
       {[
         { label: 'Shop', color: theme.colors.primary },
-        { label: 'Courier', color: theme.colors.secondary },
-        { label: 'Home', color: '#FFB84D' },
+        { label: 'Courier', color: mapUiColors.courier },
+        { label: 'Home', color: mapUiColors.home },
       ].map((item) => (
         <View
           key={item.label}
@@ -159,7 +171,9 @@ function MarkerLegend() {
               backgroundColor: item.color,
             }}
           />
-          <AppText variant="caption">{item.label}</AppText>
+          <AppText variant="caption" color={mapUiColors.overlayText}>
+            {item.label}
+          </AppText>
         </View>
       ))}
     </View>
@@ -176,7 +190,7 @@ function CourierMarker() {
           width: 34,
           height: 34,
           borderRadius: 17,
-          backgroundColor: theme.colors.secondary,
+          backgroundColor: mapUiColors.courier,
           borderWidth: 2.5,
           borderColor: '#FFFFFF',
           alignItems: 'center',
@@ -191,7 +205,7 @@ function CourierMarker() {
           width: 10,
           height: 10,
           borderBottomLeftRadius: 3,
-          backgroundColor: theme.colors.secondary,
+          backgroundColor: mapUiColors.courier,
           borderBottomWidth: 2.5,
           borderRightWidth: 2.5,
           borderColor: '#FFFFFF',
@@ -324,8 +338,8 @@ function TrackingMap({ order }: { order: Order }) {
         <Circle
           center={courier}
           radius={95}
-          fillColor="rgba(255,107,44,0.14)"
-          strokeColor="rgba(255,107,44,0.28)"
+          fillColor={mapUiColors.courierGlow}
+          strokeColor="rgba(27,27,31,0.18)"
           strokeWidth={1}
         />
 
@@ -337,7 +351,7 @@ function TrackingMap({ order }: { order: Order }) {
         />
         <Marker
           coordinate={destination}
-          pinColor="#FFB84D"
+          pinColor={mapUiColors.home}
           title={order.trackingStops[order.trackingStops.length - 1]?.label ?? 'Home'}
           description="Drop-off"
         />
@@ -356,7 +370,9 @@ function TrackingMap({ order }: { order: Order }) {
           borderRadius: theme.radii.pill,
           paddingHorizontal: 12,
           paddingVertical: 7,
-          backgroundColor: 'rgba(255,255,255,0.97)',
+          backgroundColor: mapUiColors.overlayBackground,
+          borderWidth: 1,
+          borderColor: mapUiColors.overlayBorder,
           flexDirection: 'row',
           alignItems: 'center',
           gap: 6,
@@ -370,7 +386,9 @@ function TrackingMap({ order }: { order: Order }) {
             backgroundColor: theme.colors.primary,
           }}
         />
-        <AppText variant="caption">Live route</AppText>
+        <AppText variant="caption" color={mapUiColors.overlayText}>
+          Live route
+        </AppText>
       </View>
 
       <View
