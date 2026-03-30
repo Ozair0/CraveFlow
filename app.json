@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "delivery_gpt",
-    "slug": "delivery_gpt",
+    "name": "CraveFlow",
+    "slug": "craveflow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "deliverygpt",
+    "scheme": "craveflow",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.ozair.craveflow",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

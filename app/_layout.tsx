@@ -12,7 +12,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
-import 'react-native-reanimated';
 
 import { BootScreen } from '@/components/states/boot-screen';
 import { useAppTheme } from '@/hooks/use-app-theme';
