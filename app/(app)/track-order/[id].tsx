@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
-import { Image as RNImage, Linking, Platform, View } from 'react-native';
+import { Linking, Platform, View } from 'react-native';
 import MapView, { Circle, Marker, Polyline } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -55,7 +55,7 @@ const mapUiColors = {
   overlayText: '#241A15',
   overlayMuted: '#7E6E63',
   courier: '#1B1B1F',
-  courierGlow: 'rgba(27,27,31,0.12)',
+  courierGlow: 'rgba(255,122,26,0.10)',
   home: '#FFB84D',
 };
 
@@ -176,63 +176,6 @@ function MarkerLegend() {
           </AppText>
         </View>
       ))}
-    </View>
-  );
-}
-
-function CourierMarker({ avatar }: { avatar: Order['courier']['avatar'] }) {
-  const theme = useAppTheme();
-
-  return (
-    <View
-      collapsable={false}
-      style={{
-        width: 64,
-        height: 64,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <View
-        style={{
-          position: 'absolute',
-          width: 56,
-          height: 56,
-          borderRadius: 28,
-          backgroundColor: 'rgba(255,255,255,0.86)',
-        }}
-      />
-      <View
-        style={{
-          width: 46,
-          height: 46,
-          borderRadius: 23,
-          backgroundColor: mapUiColors.courier,
-          borderWidth: 3,
-          borderColor: '#FFFFFF',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          ...theme.shadow.soft,
-        }}>
-        <RNImage
-          source={{ uri: avatar }}
-          style={{ width: 32, height: 32, borderRadius: 16 }}
-          resizeMode="cover"
-        />
-      </View>
-      <View
-        style={{
-          position: 'absolute',
-          right: 10,
-          bottom: 10,
-          width: 12,
-          height: 12,
-          borderRadius: 6,
-          backgroundColor: theme.colors.primary,
-          borderWidth: 2,
-          borderColor: '#FFFFFF',
-        }}
-      />
     </View>
   );
 }
@@ -358,9 +301,9 @@ function TrackingMap({ order }: { order: Order }) {
         <Polyline coordinates={route} strokeColor={theme.colors.primary} strokeWidth={5} />
         <Circle
           center={courier}
-          radius={95}
+          radius={55}
           fillColor={mapUiColors.courierGlow}
-          strokeColor="rgba(27,27,31,0.18)"
+          strokeColor="rgba(255,122,26,0.18)"
           strokeWidth={1}
         />
 
@@ -376,9 +319,13 @@ function TrackingMap({ order }: { order: Order }) {
           title={order.trackingStops[order.trackingStops.length - 1]?.label ?? 'Home'}
           description="Drop-off"
         />
-        <Marker coordinate={courier} anchor={{ x: 0.5, y: 0.5 }}>
-          <CourierMarker avatar={order.courier.avatar} />
-        </Marker>
+        <Marker
+          coordinate={courier}
+          anchor={{ x: 0.5, y: 0.5 }}
+          image={require('../../../assets/images/courier-marker.png')}
+          title={order.courier.name}
+          description="Courier location"
+        />
       </MapView>
 
       <MarkerLegend />
