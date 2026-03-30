@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, View } from 'react-native';
+import { type DimensionValue, Pressable, View } from 'react-native';
 
 import { getRestaurantById } from '@/data/mock-data';
 import { formatCurrency, formatDishRating, formatMinutesRange } from '@/lib/format';
@@ -81,6 +81,7 @@ type DishCardProps = {
   isFavorite?: boolean;
   variant?: 'grid' | 'wide';
   footerAction?: React.ReactNode;
+  cardWidth?: DimensionValue;
 };
 
 export function DishCard({
@@ -90,6 +91,7 @@ export function DishCard({
   isFavorite,
   variant = 'grid',
   footerAction,
+  cardWidth,
 }: DishCardProps) {
   const theme = useAppTheme();
   const restaurant = getRestaurantById(dish.restaurantId);
@@ -100,7 +102,7 @@ export function DishCard({
     <Pressable
       onPress={onPress}
       style={{
-        width: wide ? '100%' : 164,
+        width: cardWidth ?? (wide ? '100%' : 164),
         borderRadius: theme.radii.lg,
         overflow: 'visible',
         ...theme.shadow.soft,

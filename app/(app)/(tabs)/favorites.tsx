@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 
 import { DishCard, RestaurantCard } from '@/components/cards/catalog-cards';
 import { PageHeader } from '@/components/layout/page-header';
@@ -14,8 +14,11 @@ import { useAppState } from '@/providers/app-provider';
 
 export default function FavoritesScreen() {
   const theme = useAppTheme();
+  const { width } = useWindowDimensions();
   const { appState, toggleFavoriteDish, toggleFavoriteRestaurant } = useAppState();
   const [segment, setSegment] = useState('dishes');
+  const gridGap = theme.spacing.md;
+  const gridCardWidth = Math.floor((width - theme.spacing.lg * 2 - gridGap) / 2);
 
   if (!appState) {
     return null;
@@ -48,6 +51,7 @@ export default function FavoritesScreen() {
               <DishCard
                 key={dish.id}
                 dish={dish}
+                cardWidth={gridCardWidth}
                 onPress={() =>
                   router.push({ pathname: '/(app)/product/[id]', params: { id: dish.id } })
                 }

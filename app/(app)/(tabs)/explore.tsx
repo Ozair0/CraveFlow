@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { startTransition, useDeferredValue, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { DishCard, RestaurantCard } from '@/components/cards/catalog-cards';
 import { Screen } from '@/components/layout/screen';
@@ -18,6 +18,7 @@ import { useAppState } from '@/providers/app-provider';
 
 export default function ExploreScreen() {
   const theme = useAppTheme();
+  const { width } = useWindowDimensions();
   const { appState, toggleFavoriteDish, toggleFavoriteRestaurant } = useAppState();
   const [query, setQuery] = useState('');
   const [segment, setSegment] = useState('all');
@@ -42,6 +43,8 @@ export default function ExploreScreen() {
   const noResults =
     (showDishes ? dishResults.length === 0 : true) &&
     (showRestaurants ? restaurantResults.length === 0 : true);
+  const gridGap = theme.spacing.md;
+  const gridCardWidth = Math.floor((width - theme.spacing.lg * 2 - gridGap) / 2);
 
   return (
     <Screen contentContainerStyle={{ gap: theme.spacing.lg }}>
@@ -99,6 +102,7 @@ export default function ExploreScreen() {
                   <DishCard
                     key={dish.id}
                     dish={dish}
+                    cardWidth={gridCardWidth}
                     onPress={() =>
                       router.push({ pathname: '/(app)/product/[id]', params: { id: dish.id } })
                     }
