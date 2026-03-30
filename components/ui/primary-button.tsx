@@ -63,11 +63,21 @@ export function PrimaryButton({
       {loading ? (
         <ActivityIndicator color={isSolid ? '#FFFFFF' : theme.colors.primary} />
       ) : (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: theme.spacing.sm,
+            minWidth: 0,
+            flexShrink: 1,
+          }}>
           {icon}
           <AppText
             variant="label"
             color={isSolid ? '#FFFFFF' : variant === 'ghost' ? theme.colors.text : theme.colors.text}
+            numberOfLines={1}
+            style={{ flexShrink: 1 }}
           >
             {label}
           </AppText>

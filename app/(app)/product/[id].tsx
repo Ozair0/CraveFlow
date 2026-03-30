@@ -324,24 +324,29 @@ export default function ProductScreen() {
           paddingHorizontal: theme.spacing.lg,
           paddingBottom: theme.spacing.md,
         }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md }}>
-          <QuantityStepper
-            value={quantity}
-            onDecrease={() => setQuantity((current) => Math.max(1, current - 1))}
-            onIncrease={() => setQuantity((current) => current + 1)}
-          />
-          <PrimaryButton
-            label={`Add item ${formatCurrency(total)}`}
-            onPress={() => {
-              addToCart({
-                dishId: dish.id,
-                sizeId: selectedSizeId,
-                quantity,
-                addOnIds: selectedAddOnIds,
-              });
-              router.push('/(app)/(tabs)/cart');
-            }}
-          />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
+          <View style={{ flexShrink: 0 }}>
+            <QuantityStepper
+              value={quantity}
+              onDecrease={() => setQuantity((current) => Math.max(1, current - 1))}
+              onIncrease={() => setQuantity((current) => current + 1)}
+            />
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <PrimaryButton
+              label={`Add item ${formatCurrency(total)}`}
+              onPress={() => {
+                addToCart({
+                  dishId: dish.id,
+                  sizeId: selectedSizeId,
+                  quantity,
+                  addOnIds: selectedAddOnIds,
+                });
+                router.push('/(app)/(tabs)/cart');
+              }}
+              style={{ paddingHorizontal: theme.spacing.lg }}
+            />
+          </View>
         </View>
       </SafeAreaView>
     </SafeAreaView>
