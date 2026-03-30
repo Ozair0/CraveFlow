@@ -75,7 +75,7 @@ export const offers: Offer[] = [
     discountLabel: 'Free Delivery',
     ctaLabel: 'Order Lunch',
     image:
-      'https://images.unsplash.com/photo-1548365328-9f547fb0953b?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: 'late-night',
@@ -179,8 +179,8 @@ export const dishes: Dish[] = [
       'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1548365328-9f547fb0953b?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&w=1200&q=80',
     ],
     cuisine: 'Italian',
@@ -213,9 +213,8 @@ export const dishes: Dish[] = [
     description:
       'Crisp taco shells packed with marinated steak, pico de gallo, shredded lettuce, and a bright salsa verde finish.',
     image:
-      'https://images.unsplash.com/photo-1565299585323-38174c4a6471?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80',
     gallery: [
-      'https://images.unsplash.com/photo-1565299585323-38174c4a6471?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1624300629298-e9de39c13be5?auto=format&fit=crop&w=1200&q=80',
     ],
@@ -565,7 +564,7 @@ const ordersSeed: Order[] = [
         dishId: 'mexican-tacos',
         name: 'Mexican Tacos',
         image:
-          'https://images.unsplash.com/photo-1565299585323-38174c4a6471?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&w=1200&q=80',
         sizeId: 'family',
         sizeLabel: '2 Tacos',
         quantity: 1,

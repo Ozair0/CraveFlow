@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -21,7 +21,15 @@ export default function ProductScreen() {
   const { appState, addToCart, toggleFavoriteDish } = useAppState();
   const dish = dishes.find((entry) => entry.id === id);
   const restaurant = dish ? getRestaurantById(dish.restaurantId) : undefined;
-  const [selectedImage, setSelectedImage] = useState(0);
+  const gallerySources = useMemo(
+    () =>
+      dish
+        ? Array.from(new Set([dish.image, ...dish.gallery].filter((source): source is string => !!source)))
+        : [],
+    [dish]
+  );
+  const [selectedImageSource, setSelectedImageSource] = useState(gallerySources[0] ?? '');
+  const [failedImageSources, setFailedImageSources] = useState<string[]>([]);
   const [selectedSizeId, setSelectedSizeId] = useState(dish?.sizes[0]?.id ?? '');
   const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
@@ -43,6 +51,33 @@ export default function ProductScreen() {
     return (selectedSize.price + addOnTotal) * quantity;
   }, [dish, quantity, selectedAddOnIds, selectedSize]);
 
+  const availableGallery = useMemo(
+    () => gallerySources.filter((source) => !failedImageSources.includes(source)),
+    [failedImageSources, gallerySources]
+  );
+
+  useEffect(() => {
+    if (!dish) {
+      return;
+    }
+
+    setFailedImageSources([]);
+    setSelectedImageSource(gallerySources[0] ?? '');
+    setSelectedSizeId(dish.sizes[0]?.id ?? '');
+    setSelectedAddOnIds([]);
+    setQuantity(1);
+  }, [dish, gallerySources]);
+
+  useEffect(() => {
+    if (!availableGallery.length) {
+      return;
+    }
+
+    if (!availableGallery.includes(selectedImageSource)) {
+      setSelectedImageSource(availableGallery[0]);
+    }
+  }, [availableGallery, selectedImageSource]);
+
   if (!dish || !restaurant || !appState) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -60,6 +95,10 @@ export default function ProductScreen() {
   }
 
   const isFavorite = appState.favorites.dishIds.includes(dish.id);
+  const heroImageSource =
+    availableGallery.find((source) => source === selectedImageSource) ?? availableGallery[0];
+  const registerImageError = (source: string) =>
+    setFailedImageSources((current) => (current.includes(source) ? current : [...current, source]));
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -67,11 +106,25 @@ export default function ProductScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 140 }}>
         <View>
-          <Image
-            source={dish.gallery[selectedImage] ?? dish.image}
-            style={{ width: '100%', height: 330 }}
-            contentFit="cover"
-          />
+          {heroImageSource ? (
+            <Image
+              source={heroImageSource}
+              style={{ width: '100%', height: 330 }}
+              contentFit="cover"
+              onError={() => registerImageError(heroImageSource)}
+            />
+          ) : (
+            <View
+              style={{
+                width: '100%',
+                height: 330,
+                backgroundColor: theme.colors.surfaceMuted,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Ionicons name="image-outline" size={36} color={theme.colors.textSoft} />
+            </View>
+          )}
           <View
             style={{
               position: 'absolute',
@@ -101,8 +154,8 @@ export default function ProductScreen() {
               flexDirection: 'row',
               gap: theme.spacing.sm,
             }}>
-            {dish.gallery.map((galleryItem, index) => (
-              <Pressable key={galleryItem} onPress={() => setSelectedImage(index)}>
+            {availableGallery.map((galleryItem) => (
+              <Pressable key={galleryItem} onPress={() => setSelectedImageSource(galleryItem)}>
                 <Image
                   source={galleryItem}
                   style={{
@@ -110,8 +163,10 @@ export default function ProductScreen() {
                     height: 52,
                     borderRadius: 14,
                     borderWidth: 2,
-                    borderColor: index === selectedImage ? '#FFFFFF' : 'transparent',
+                    borderColor:
+                      galleryItem === heroImageSource ? '#FFFFFF' : 'rgba(255,255,255,0.35)',
                   }}
+                  onError={() => registerImageError(galleryItem)}
                 />
               </Pressable>
             ))}
