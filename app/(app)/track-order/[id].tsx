@@ -184,7 +184,22 @@ function CourierMarker() {
   const theme = useAppTheme();
 
   return (
-    <View style={{ alignItems: 'center' }}>
+    <View
+      collapsable={false}
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 8,
+      }}>
+      <View
+        style={{
+          position: 'absolute',
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: 'rgba(255,255,255,0.72)',
+        }}
+      />
       <View
         style={{
           width: 34,
@@ -199,19 +214,6 @@ function CourierMarker() {
         }}>
         <Ionicons name="bicycle-outline" size={16} color="#FFFFFF" />
       </View>
-      <View
-        style={{
-          marginTop: -3,
-          width: 10,
-          height: 10,
-          borderBottomLeftRadius: 3,
-          backgroundColor: mapUiColors.courier,
-          borderBottomWidth: 2.5,
-          borderRightWidth: 2.5,
-          borderColor: '#FFFFFF',
-          transform: [{ rotate: '45deg' }],
-        }}
-      />
     </View>
   );
 }
@@ -355,7 +357,7 @@ function TrackingMap({ order }: { order: Order }) {
           title={order.trackingStops[order.trackingStops.length - 1]?.label ?? 'Home'}
           description="Drop-off"
         />
-        <Marker coordinate={courier} anchor={{ x: 0.5, y: 0.95 }}>
+        <Marker coordinate={courier} anchor={{ x: 0.5, y: 0.5 }}>
           <CourierMarker />
         </Marker>
       </MapView>
