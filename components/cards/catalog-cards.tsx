@@ -217,13 +217,26 @@ export function RestaurantCard({
         style={{
           width: '100%',
           flexDirection: 'row',
+          height: 118,
           backgroundColor: theme.colors.card,
           borderRadius: theme.radii.lg,
           overflow: 'hidden',
           borderWidth: 1,
           borderColor: theme.colors.border,
         }}>
-        <Image source={restaurant.image} style={{ width: 112, height: 118 }} contentFit="cover" />
+        <View
+          style={{
+            width: 112,
+            height: '100%',
+            backgroundColor: theme.colors.surfaceMuted,
+          }}>
+          <Image
+            source={restaurant.coverImage || restaurant.image}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="cover"
+            contentPosition="center"
+          />
+        </View>
         <View style={{ flex: 1, padding: theme.spacing.md, gap: 8 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
             <View style={{ flex: 1 }}>
