@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
+import { Image as ExpoImage } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
-import { Linking, Platform, View } from 'react-native';
+import { Image as RNImage, Linking, Platform, View } from 'react-native';
 import MapView, { Circle, Marker, Polyline } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -180,40 +180,59 @@ function MarkerLegend() {
   );
 }
 
-function CourierMarker() {
+function CourierMarker({ avatar }: { avatar: Order['courier']['avatar'] }) {
   const theme = useAppTheme();
 
   return (
     <View
       collapsable={false}
       style={{
+        width: 64,
+        height: 64,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 8,
       }}>
       <View
         style={{
           position: 'absolute',
-          width: 44,
-          height: 44,
-          borderRadius: 22,
-          backgroundColor: 'rgba(255,255,255,0.72)',
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+          backgroundColor: 'rgba(255,255,255,0.86)',
         }}
       />
       <View
         style={{
-          width: 34,
-          height: 34,
-          borderRadius: 17,
+          width: 46,
+          height: 46,
+          borderRadius: 23,
           backgroundColor: mapUiColors.courier,
-          borderWidth: 2.5,
+          borderWidth: 3,
           borderColor: '#FFFFFF',
           alignItems: 'center',
           justifyContent: 'center',
+          overflow: 'hidden',
           ...theme.shadow.soft,
         }}>
-        <Ionicons name="bicycle-outline" size={16} color="#FFFFFF" />
+        <RNImage
+          source={{ uri: avatar }}
+          style={{ width: 32, height: 32, borderRadius: 16 }}
+          resizeMode="cover"
+        />
       </View>
+      <View
+        style={{
+          position: 'absolute',
+          right: 10,
+          bottom: 10,
+          width: 12,
+          height: 12,
+          borderRadius: 6,
+          backgroundColor: theme.colors.primary,
+          borderWidth: 2,
+          borderColor: '#FFFFFF',
+        }}
+      />
     </View>
   );
 }
@@ -358,7 +377,7 @@ function TrackingMap({ order }: { order: Order }) {
           description="Drop-off"
         />
         <Marker coordinate={courier} anchor={{ x: 0.5, y: 0.5 }}>
-          <CourierMarker />
+          <CourierMarker avatar={order.courier.avatar} />
         </Marker>
       </MapView>
 
@@ -467,7 +486,7 @@ export default function TrackOrderScreen() {
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md }}>
-            <Image
+            <ExpoImage
               source={order.courier.avatar}
               style={{ width: 52, height: 52, borderRadius: 26 }}
               contentFit="cover"
@@ -535,8 +554,11 @@ export default function TrackOrderScreen() {
               gap: theme.spacing.md,
               alignItems: 'center',
             }}>
-            <Image source={leadItem.image} style={{ width: 74, height: 74, borderRadius: 18 }} />
-            <View style={{ flex: 1 }}>
+            <ExpoImage
+              source={leadItem.image}
+              style={{ width: 74, height: 74, borderRadius: 18 }}
+            />
+          <View style={{ flex: 1 }}>
               <AppText variant="caption" color={theme.colors.textSoft}>
                 Item
               </AppText>
