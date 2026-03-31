@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useRef } from 'react';
-import { Linking, Platform, View } from 'react-native';
-import MapView, { Circle, Marker, Polyline } from 'react-native-maps';
+import { useMemo } from 'react';
+import { Linking, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/ui/app-text';
@@ -12,42 +11,6 @@ import { PrimaryButton } from '@/components/ui/primary-button';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useAppState } from '@/providers/app-provider';
 import type { MapCoordinate, Order } from '@/types/app';
-
-const trackingMapStyle = [
-  {
-    featureType: 'poi.business',
-    stylers: [{ visibility: 'off' }],
-  },
-  {
-    featureType: 'poi.park',
-    elementType: 'geometry.fill',
-    stylers: [{ color: '#E6EEE3' }],
-  },
-  {
-    featureType: 'road',
-    elementType: 'geometry',
-    stylers: [{ color: '#FFFFFF' }],
-  },
-  {
-    featureType: 'road.arterial',
-    elementType: 'geometry',
-    stylers: [{ color: '#F7F2ED' }],
-  },
-  {
-    featureType: 'water',
-    elementType: 'geometry.fill',
-    stylers: [{ color: '#DCEAF8' }],
-  },
-  {
-    featureType: 'landscape.man_made',
-    elementType: 'geometry.fill',
-    stylers: [{ color: '#F4EEE8' }],
-  },
-  {
-    featureType: 'transit',
-    stylers: [{ visibility: 'off' }],
-  },
-];
 
 const mapUiColors = {
   overlayBackground: 'rgba(255,250,246,0.96)',
@@ -119,22 +82,6 @@ const fallbackTrackingGeometryByOrderId: Record<
   },
 };
 
-function getTrackingRegion(points: MapCoordinate[]) {
-  const latitudes = points.map((point) => point.latitude);
-  const longitudes = points.map((point) => point.longitude);
-  const minLatitude = Math.min(...latitudes);
-  const maxLatitude = Math.max(...latitudes);
-  const minLongitude = Math.min(...longitudes);
-  const maxLongitude = Math.max(...longitudes);
-
-  return {
-    latitude: (minLatitude + maxLatitude) / 2,
-    longitude: (minLongitude + maxLongitude) / 2,
-    latitudeDelta: Math.max((maxLatitude - minLatitude) * 2.2, 0.0085),
-    longitudeDelta: Math.max((maxLongitude - minLongitude) * 2.2, 0.0085),
-  };
-}
-
 function MarkerLegend() {
   const theme = useAppTheme();
 
@@ -180,46 +127,123 @@ function MarkerLegend() {
   );
 }
 
-function TrackingMapFallback() {
-  const theme = useAppTheme();
+function toXY(
+  coord: MapCoordinate,
+  bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number },
+  width: number,
+  height: number,
+  padding: number
+) {
+  const innerW = width - padding * 2;
+  const innerH = height - padding * 2;
+  const x = padding + ((coord.longitude - bounds.minLng) / (bounds.maxLng - bounds.minLng || 1)) * innerW;
+  const y = padding + ((bounds.maxLat - coord.latitude) / (bounds.maxLat - bounds.minLat || 1)) * innerH;
+  return { x, y };
+}
 
+function MockMapRoute({
+  route,
+  bounds,
+  width,
+  height,
+  padding,
+  color,
+}: {
+  route: MapCoordinate[];
+  bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number };
+  width: number;
+  height: number;
+  padding: number;
+  color: string;
+}) {
   return (
-    <View
-      style={{
-        height: 390,
-        borderRadius: 34,
-        backgroundColor: theme.colors.surface,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: theme.spacing.xl,
-        gap: theme.spacing.sm,
-      }}>
+    <>
+      {route.map((coord, i) => {
+        if (i === 0) return null;
+        const from = toXY(route[i - 1], bounds, width, height, padding);
+        const to = toXY(coord, bounds, width, height, padding);
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        return (
+          <View
+            key={i}
+            style={{
+              position: 'absolute',
+              left: from.x,
+              top: from.y - 2,
+              width: length,
+              height: 4,
+              backgroundColor: color,
+              borderRadius: 2,
+              transform: [{ rotate: `${angle}deg` }],
+              transformOrigin: 'left center',
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+function MockMapPin({
+  coord,
+  bounds,
+  width,
+  height,
+  padding,
+  color,
+  label,
+  size = 16,
+}: {
+  coord: MapCoordinate;
+  bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number };
+  width: number;
+  height: number;
+  padding: number;
+  color: string;
+  label: string;
+  size?: number;
+}) {
+  const { x, y } = toXY(coord, bounds, width, height, padding);
+  return (
+    <View style={{ position: 'absolute', left: x - size / 2, top: y - size / 2, alignItems: 'center' }}>
       <View
         style={{
-          width: 58,
-          height: 58,
-          borderRadius: 29,
-          backgroundColor: theme.colors.primaryMuted,
-          alignItems: 'center',
-          justifyContent: 'center',
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: color,
+          borderWidth: 2.5,
+          borderColor: '#FFFFFF',
+          elevation: 4,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 4,
+        }}
+      />
+      <View
+        style={{
+          marginTop: 4,
+          backgroundColor: mapUiColors.overlayBackground,
+          paddingHorizontal: 6,
+          paddingVertical: 2,
+          borderRadius: 6,
+          borderWidth: 1,
+          borderColor: mapUiColors.overlayBorder,
         }}>
-        <Ionicons name="map-outline" size={28} color={theme.colors.primary} />
+        <AppText variant="caption" style={{ fontSize: 9 }} color={mapUiColors.overlayText}>
+          {label}
+        </AppText>
       </View>
-      <AppText variant="title" align="center">
-        Live map preview is available on iOS and Android
-      </AppText>
-      <AppText variant="body" color={theme.colors.textMuted} align="center">
-        This tracking view uses the device map renderer so you get real roads and navigation context.
-      </AppText>
     </View>
   );
 }
 
 function TrackingMap({ order }: { order: Order }) {
   const theme = useAppTheme();
-  const mapRef = useRef<MapView | null>(null);
   const fallbackGeometry = fallbackTrackingGeometryByOrderId[order.id];
   const pickupStop = order.trackingStops[0];
   const destinationStop = order.trackingStops[order.trackingStops.length - 1];
@@ -236,97 +260,175 @@ function TrackingMap({ order }: { order: Order }) {
         ? order.trackingRoute
         : fallbackGeometry?.trackingRoute?.length
           ? fallbackGeometry.trackingRoute
-        : [pickup, courier, destination].filter((point): point is MapCoordinate => !!point),
+          : [pickup, courier, destination].filter((point): point is MapCoordinate => !!point),
     [courier, destination, fallbackGeometry?.trackingRoute, order.trackingRoute, pickup]
   );
-  const points = useMemo(
-    () =>
-      [pickup, courier, destination, ...route].filter(
-        (point): point is MapCoordinate => !!point
-      ),
-    [courier, destination, pickup, route]
-  );
-  const region = useMemo(() => getTrackingRegion(points), [points]);
 
-  useEffect(() => {
-    if (Platform.OS === 'web' || points.length < 2) {
-      return;
-    }
+  const MAP_W = 360;
+  const MAP_H = 390;
+  const MAP_PAD = 50;
 
-    const timeout = setTimeout(() => {
-      mapRef.current?.fitToCoordinates(points, {
-        animated: false,
-        edgePadding: {
-          top: 94,
-          right: 48,
-          bottom: 180,
-          left: 56,
-        },
-      });
-    }, 350);
+  const bounds = useMemo(() => {
+    const all = [pickup, courier, destination, ...route].filter(
+      (p): p is MapCoordinate => !!p
+    );
+    if (all.length === 0) return { minLat: 0, maxLat: 1, minLng: 0, maxLng: 1 };
+    const lats = all.map((p) => p.latitude);
+    const lngs = all.map((p) => p.longitude);
+    return {
+      minLat: Math.min(...lats),
+      maxLat: Math.max(...lats),
+      minLng: Math.min(...lngs),
+      maxLng: Math.max(...lngs),
+    };
+  }, [pickup, courier, destination, route]);
 
-    return () => clearTimeout(timeout);
-  }, [points]);
-
-  if (Platform.OS === 'web' || !pickup || !destination || !courier || route.length < 2) {
-    return <TrackingMapFallback />;
+  if (!pickup || !destination || !courier || route.length < 2) {
+    return (
+      <View
+        style={{
+          height: MAP_H,
+          borderRadius: 34,
+          backgroundColor: theme.colors.surface,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: theme.spacing.xl,
+          gap: theme.spacing.sm,
+        }}>
+        <View
+          style={{
+            width: 58,
+            height: 58,
+            borderRadius: 29,
+            backgroundColor: theme.colors.primaryMuted,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Ionicons name="map-outline" size={28} color={theme.colors.primary} />
+        </View>
+        <AppText variant="title" align="center">
+          Tracking data unavailable
+        </AppText>
+      </View>
+    );
   }
 
   return (
     <View
       style={{
-        height: 390,
+        height: MAP_H,
         borderRadius: 34,
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: theme.colors.border,
-        backgroundColor: theme.colors.surface,
+        backgroundColor: '#F4EEE8',
       }}>
-      <MapView
-        ref={mapRef}
-        style={{ flex: 1 }}
-        initialRegion={region}
-        customMapStyle={trackingMapStyle}
-        scrollEnabled={false}
-        rotateEnabled={false}
-        pitchEnabled={false}
-        zoomEnabled={false}
-        toolbarEnabled={false}
-        showsCompass={false}
-        showsScale={false}
-        showsTraffic={false}
-        loadingEnabled
-      >
-        <Polyline coordinates={route} strokeColor="rgba(255,255,255,0.98)" strokeWidth={12} />
-        <Polyline coordinates={route} strokeColor={theme.colors.primary} strokeWidth={5} />
-        <Circle
-          center={courier}
-          radius={55}
-          fillColor={mapUiColors.courierGlow}
-          strokeColor="rgba(255,122,26,0.18)"
-          strokeWidth={1}
-        />
+      {/* Water-like background patches */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: '#F4EEE8',
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: -30,
+          width: 180,
+          height: 120,
+          borderRadius: 60,
+          backgroundColor: '#DCEAF8',
+          opacity: 0.5,
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 40,
+          left: -20,
+          width: 140,
+          height: 90,
+          borderRadius: 50,
+          backgroundColor: '#E6EEE3',
+          opacity: 0.6,
+        }}
+      />
 
-        <Marker
-          coordinate={pickup}
-          pinColor={theme.colors.primary}
-          title={order.trackingStops[0]?.label ?? 'Shop'}
-          description="Pickup location"
-        />
-        <Marker
-          coordinate={destination}
-          pinColor={mapUiColors.home}
-          title={order.trackingStops[order.trackingStops.length - 1]?.label ?? 'Home'}
-          description="Drop-off"
-        />
-        <Marker
-          coordinate={courier}
-          anchor={{ x: 0.5, y: 0.5 }}
-          image={require('../../../assets/images/courier-marker.png')}
-          title={order.courier.name}
-          description="Courier location"
-        />
-      </MapView>
+      {/* Route line (white outline) */}
+      <MockMapRoute
+        route={route}
+        bounds={bounds}
+        width={MAP_W}
+        height={MAP_H}
+        padding={MAP_PAD}
+        color="rgba(255,255,255,0.95)"
+      />
+      {/* Route line (primary color) */}
+      <MockMapRoute
+        route={route}
+        bounds={bounds}
+        width={MAP_W}
+        height={MAP_H}
+        padding={MAP_PAD}
+        color={theme.colors.primary}
+      />
+
+      {/* Courier glow */}
+      {(() => {
+        const pos = toXY(courier, bounds, MAP_W, MAP_H, MAP_PAD);
+        return (
+          <View
+            style={{
+              position: 'absolute',
+              left: pos.x - 22,
+              top: pos.y - 22,
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: mapUiColors.courierGlow,
+              borderWidth: 1,
+              borderColor: 'rgba(255,122,26,0.18)',
+            }}
+          />
+        );
+      })()}
+
+      {/* Markers */}
+      <MockMapPin
+        coord={pickup}
+        bounds={bounds}
+        width={MAP_W}
+        height={MAP_H}
+        padding={MAP_PAD}
+        color={theme.colors.primary}
+        label={pickupStop?.label ?? 'Shop'}
+      />
+      <MockMapPin
+        coord={destination}
+        bounds={bounds}
+        width={MAP_W}
+        height={MAP_H}
+        padding={MAP_PAD}
+        color={mapUiColors.home}
+        label={destinationStop?.label ?? 'Home'}
+      />
+      <MockMapPin
+        coord={courier}
+        bounds={bounds}
+        width={MAP_W}
+        height={MAP_H}
+        padding={MAP_PAD}
+        color={mapUiColors.courier}
+        label={order.courier.name}
+        size={20}
+      />
 
       <MarkerLegend />
 
@@ -357,15 +459,6 @@ function TrackingMap({ order }: { order: Order }) {
         <AppText variant="caption" color={mapUiColors.overlayText}>
           Live route
         </AppText>
-      </View>
-
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 82,
-          right: 20,
-        }}>
-        <IconButton name="locate-outline" size={18} />
       </View>
     </View>
   );

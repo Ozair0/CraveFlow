@@ -77,9 +77,9 @@ export function OrderCard({
 
       <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
         {secondaryLabel && onSecondaryPress ? (
-          <PrimaryButton label={secondaryLabel} variant="outline" onPress={onSecondaryPress} />
+          <PrimaryButton label={secondaryLabel} variant="outline" onPress={onSecondaryPress} style={{ flex: 1 }} />
         ) : null}
-        <PrimaryButton label={primaryLabel} onPress={onPrimaryPress} />
+        <PrimaryButton label={primaryLabel} onPress={onPrimaryPress} style={{ flex: 1 }} />
       </View>
     </View>
   );
@@ -193,9 +193,9 @@ export function BookingCard({
 
       <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
         {secondaryLabel && onSecondaryPress ? (
-          <PrimaryButton label={secondaryLabel} variant="outline" onPress={onSecondaryPress} />
+          <PrimaryButton label={secondaryLabel} variant="outline" onPress={onSecondaryPress} style={{ flex: 1 }} />
         ) : null}
-        <PrimaryButton label={primaryLabel} onPress={onPrimaryPress} />
+        <PrimaryButton label={primaryLabel} onPress={onPrimaryPress} style={{ flex: 1 }} />
       </View>
     </View>
   );
